@@ -1,3 +1,7 @@
+
+# Ignore Markdown preview file
+README.html
+
 # Compiled Object files
 *.slo
 *.lo
