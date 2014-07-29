@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WarpBlend-Quadros", "WarpBlend-Quadros\WarpBlend-Quadros.vcxproj", "{199AD0E5-AD5E-4E85-84CF-3AB0CF825757}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnwarpAll-Quadros", "UnwarpAll-Quadros\UnwarpAll-Quadros.vcxproj", "{6C222BD3-CB57-4A65-9105-A9CDBBC27911}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{199AD0E5-AD5E-4E85-84CF-3AB0CF825757}.Debug|Win32.ActiveCfg = Debug|Win32
+		{199AD0E5-AD5E-4E85-84CF-3AB0CF825757}.Debug|Win32.Build.0 = Debug|Win32
+		{199AD0E5-AD5E-4E85-84CF-3AB0CF825757}.Release|Win32.ActiveCfg = Release|Win32
+		{199AD0E5-AD5E-4E85-84CF-3AB0CF825757}.Release|Win32.Build.0 = Release|Win32
+		{6C222BD3-CB57-4A65-9105-A9CDBBC27911}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6C222BD3-CB57-4A65-9105-A9CDBBC27911}.Debug|Win32.Build.0 = Debug|Win32
+		{6C222BD3-CB57-4A65-9105-A9CDBBC27911}.Release|Win32.ActiveCfg = Release|Win32
+		{6C222BD3-CB57-4A65-9105-A9CDBBC27911}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
