@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include "stdafx.h"
 
-#include <fstream>
-
 #include <windows.h>
 #include <assert.h>
 #include "include/nvapi.h"

@@ -16,7 +16,6 @@
 #include "stdafx.h"
 
 #include <iostream>
-#include <fstream>
 
 #include <windows.h>
 #include <assert.h>
@@ -36,12 +35,7 @@ int main(int argc, char **argv)
 	int maxNumVertices = 0;
 	int sticky = 0;
 
-	std::ofstream logfile;
-	logfile.open ("log.txt", std::ios::out);
-	logfile << "Logfile created \n";
-	logfile.close();
-
-	printf("App Version: 1.2\n");
+	printf("RESETTING ALL WARPING AND BLENDING\n\n");
 
 	// Initialize NVAPI, get GPU handles, etc.
 	error = NvAPI_Initialize();
@@ -85,7 +79,11 @@ int main(int argc, char **argv)
 			ZeroMemory(&scanInfo , sizeof(NV_SCANOUT_INFORMATION));
 			scanInfo.version = NV_SCANOUT_INFORMATION_VER;
 			
-			printf("GPU %d, displayId 0x%08x\n",gpu,dispIds[dispIndex].displayId);
+			printf("Resetting GPU %d, displayId 0x%08x\n",gpu,dispIds[dispIndex].displayId);
+
+			// -----------------------------------------------------------------------------
+			// RESET ALL WARPING
+			// -----------------------------------------------------------------------------
 
 			warpingData.version =  NV_SCANOUT_WARPING_VER; 
 			warpingData.vertexFormat = NV_GPU_WARPING_VERTICE_FORMAT_TRIANGLESTRIP_XYUVRQ;
@@ -101,6 +99,10 @@ int main(int argc, char **argv)
 				printf("NvAPI_GPU_SetScanoutWarping: %s\n", estring);
 			}
 
+			// -----------------------------------------------------------------------------
+			// RESET ALL BLENDING
+			// -----------------------------------------------------------------------------
+
 			NV_SCANOUT_INTENSITY_DATA intensityData; 
 			intensityData.blendingTexture = NULL;
  			 
@@ -109,10 +111,13 @@ int main(int argc, char **argv)
 			{
 				NvAPI_GetErrorMessage(error, estring);
 				printf("NvAPI_GPU_SetScanoutIntensity: %s\n", estring);
-			} 
+			}
+
 		} //end of for displays
+		
 		delete [] dispIds;
-	}	//end of loop gpus
+
+	} //end of loop gpus
 
 }
 
