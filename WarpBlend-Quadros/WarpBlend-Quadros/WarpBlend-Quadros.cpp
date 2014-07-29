@@ -1,16 +1,3 @@
-
-//
-// File:           WarpBlendSample.cpp
-// Description:    Sample implementation of Nvidia warp and blend API
-// Target OS:      Windows 7 only
-// Notes:          Requires R334+ NVAPI and driver
-//
-
-//Version 1.2 Changelog
-//- Uses DisplayIds instead of outputIds (deprecated)
-//- Removed mosaic calls to get gisplay handle. Replace with NvAPI_DISP_GetDisplayHandleFromDisplayId instead
-//- Added NvAPI_GPU_GetScanoutConfigurationEx for the case when viewport rect!=display rect
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "stdafx.h"
@@ -45,7 +32,7 @@ int main(int argc, char **argv)
 	NV_SCANOUT_WARPING_DATA warpingData;
 	NvAPI_ShortString estring;
 	int maxNumVertices = 0;
-	int sticky = 1;
+	int sticky = 0;
 
 	// for loading blending images
 	std::vector<unsigned char> image;
@@ -168,6 +155,8 @@ int main(int argc, char **argv)
 			int row = locationsOfDisplay[dispIds[dispIndex].displayId].first;
 			int col = locationsOfDisplay[dispIds[dispIndex].displayId].second;
 
+			printf("Warping projector at ROW: %d, COL: %d\n", row, col);
+
 			std::vector<float> vertices = get_warping_vertices(row,col,srcLeft,srcTop,srcWidth,srcHeight);
 			int maxnumvert = 4;
 
@@ -196,16 +185,14 @@ int main(int argc, char **argv)
 
 			NV_SCANOUT_INTENSITY_DATA intensityData; 
 
-			string blend_filename = "blend_(" + to_string(row) + ", " + to_string(col) + ").png";
 			image.clear();
+			string blend_filename = "blend_(" + to_string(row) + ", " + to_string(col) + ").png";
 			unsigned lodePng_error = lodepng::decode(image, width, height, blend_filename);
             if(lodePng_error) printf("LODEPNG ERROR %s\n ", lodepng_error_text(lodePng_error));
 
-			// copy values from png into texture
+			// copy values from png, skip every 4th value - we don't want the alpha channel
 			std::vector<float> intensityTexture_vec;
 			for(int i=0; i<image.size(); i++){
-
-				// skip every 4th value - we don't want the alpha channel
 				if ((i+1)%4 != 0){
 					intensityTexture_vec.push_back(image[i] / 255.0f);
 				}
@@ -213,18 +200,16 @@ int main(int argc, char **argv)
 
 			float* intensityTexture = &intensityTexture_vec[0];
 
-			float offsetTexture[2]        = { 0.0f, 0.1f};
 			intensityData.version           = NV_SCANOUT_INTENSITY_DATA_VER;
-			intensityData.width               = 1920;
-			intensityData.height              = 1080;
+			intensityData.width             = 1920;
+			intensityData.height            = 1080;
 			intensityData.blendingTexture   = intensityTexture;
+
+			// do not want to use an offset texture
 			intensityData.offsetTexture		= NULL;
 			intensityData.offsetTexChannels = 1;
 
-			int pixel = 0;
-			printf("RGBA: %d %d %d %d, size: %d %d %d \n", image[pixel], image[pixel+1], image[pixel+2], image[pixel+3], image.size(), width, height);
-
-			// This call does the intensity map
+			// this call does the intensity map
 			error =  NvAPI_GPU_SetScanoutIntensity(dispIds[dispIndex].displayId, &intensityData, &sticky);
 
 			if (error != NVAPI_OK)  
@@ -234,8 +219,10 @@ int main(int argc, char **argv)
 			} 
 
 		} //end of for displays
+		
 		delete [] dispIds;
-	}	//end of loop gpus
+
+	} //end of loop gpus
 
 }
 
