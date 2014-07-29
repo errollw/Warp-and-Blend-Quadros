@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="paper.js"></script>
+<!-- Define inlined PaperScript associate it with myCanvas -->
+<script type="text/paperscript" canvas="myCanvas">
+
+// general global variables for drawing
+var vw = view.size.width,
+    vh = view.size.height;
+
+var overlap_h = 30,
+    overlap_v = 90;
+
+var selected_ctrl_pt;
+
+var colors = [["cyan", "red", "green"],
+              ["HotPink", "MediumVioletRed", "DarkOrange"]];
+
+ctrl_pts = [];
+
+for (screen_row=0; screen_row<=1; screen_row++){
+  ctrl_pts[screen_row] = [];
+
+  for (screen_col=0; screen_col<=2; screen_col++){
+    ctrl_pts[screen_row][screen_col] = [];
+
+    for (ctrl_pt_row=0; ctrl_pt_row<=1; ctrl_pt_row++){
+      for (ctrl_pt_col=0; ctrl_pt_col<=1; ctrl_pt_col++){
+
+        ctrl_pts[screen_row][screen_col].push(
+          make_ctrl_pt(ctrl_pt_row, ctrl_pt_col, screen_row, screen_col))
+      }
+    }
+  }
+}
+
+function make_ctrl_pt(ctrl_pt_row, ctrl_pt_col, screen_row, screen_col){
+  var dx = ctrl_pt_col == 0 ? vw/80 : vw/-80
+  var dy = ctrl_pt_row == 0 ? vh/80 : vh/-80
+  return new Shape.Circle({
+    center: [screen_col*vw/3 + ctrl_pt_col*vw/3 + dx, screen_row*vh/2 + ctrl_pt_row*vh/2 + dy],
+    radius: 6,
+    strokeColor: colors[screen_row][screen_col]
+  });
+}
+
+
+function redraw_paths() {
+
+  for (s_r=0; s_r<=1; s_r++){    // loop over screen_row (s_r)
+    for (s_c=0; s_c<=2; s_c++){  // loop over screen_col (s_c)
+
+      var cps = ctrl_pts[s_r][s_c];
+
+      // remove previous paths
+      if (cps.align_path) cps.align_path.remove();
+      if (cps.blend_path) cps.blend_path.remove();
+
+      // Do not draw path if blanking rect is visible
+      if (cps.blanking_rect && cps.blanking_rect.opacity != 0) continue;
+
+      var align_segs = [cps[0].position, cps[1].position, cps[3].position, cps[2].position];
+
+      var blend_segs = [
+        cps[0].position + (s_c != 0 ? (cps[0].position-cps[1].position).normalize()*overlap_h/2 : 0)
+                        + (s_r == 1 ? (cps[0].position-cps[2].position).normalize()*overlap_v/2 : 0),
+        cps[1].position + (s_c != 2 ? (cps[1].position-cps[0].position).normalize()*overlap_h/2 : 0)
+                        + (s_r == 1 ? (cps[1].position-cps[3].position).normalize()*overlap_v/2 : 0),
+        cps[3].position + (s_c != 2 ? (cps[3].position-cps[2].position).normalize()*overlap_h/2 : 0)
+                        + (s_r == 0 ? (cps[3].position-cps[1].position).normalize()*overlap_v/2 : 0),
+        cps[2].position - (s_c != 0 ? (cps[3].position-cps[2].position).normalize()*overlap_h/2 : 0)
+                        + (s_r == 0 ? (cps[2].position-cps[0].position).normalize()*overlap_v/2 : 0)];
+      
+      cps.align_path = new Path(align_segs);
+      cps.blend_path = new Path(blend_segs);
+
+      cps.blend_path.closed = cps.align_path.closed = true;
+
+      cps.align_path.strokeColor = colors[s_r][s_c];
+      cps.blend_path.fillColor = cps.align_path.fillColor = colors[s_r][s_c];
+      cps.blend_path.fillColor.alpha = cps.align_path.fillColor.alpha = 0.4;
+    }
+  }
+}
+
+function onMouseDown(evt) {
+
+  // choose which set of cps to adjust based on mouse position
+  var pt = evt.point;
+  var cps = ctrl_pts[pt.y<vh/2 ? 0 : 1][pt.x<2*vw/3 ? pt.x<vw/3 ? 0 : 1 : 2]
+
+  var cp_to_move = cps[0];
+  for (cp_idx=0; cp_idx<=3; cp_idx++){
+    dist = (cps[cp_idx].position - evt.point).length
+    if (dist < (cp_to_move.position - evt.point).length)
+      cp_to_move = cps[cp_idx];
+  }
+
+  selected_ctrl_pt = cp_to_move;
+
+  cp_to_move.position = pt;
+
+  redraw_paths();
+}
+
+function onKeyDown(event) {
+
+  if (Key.isDown("shift")) {
+
+    // Adjust overlap sizes
+    if (event.key == 'up')    overlap_v++;
+    if (event.key == 'down')  overlap_v--;
+    if (event.key == 'left')  overlap_h--;
+    if (event.key == 'right') overlap_h++;
+
+  } else if (selected_ctrl_pt) {
+
+    // Adjust previously pressed (selected) control point position
+    if (event.key == 'up')    selected_ctrl_pt.position.y--;
+    if (event.key == 'down')  selected_ctrl_pt.position.y++;
+    if (event.key == 'left')  selected_ctrl_pt.position.x--;
+    if (event.key == 'right') selected_ctrl_pt.position.x++;
+
+  }
+
+  if ("qweasd".indexOf(event.key) != -1) {
+    var s_row = "asd".indexOf(event.key) != -1 ? 1 : 0,
+        s_col = "qwe".indexOf(event.key) * "asd".indexOf(event.key) * -1;
+    ctrl_pt = ctrl_pts[s_row][s_col]
+    if (!ctrl_pt.blanking_rect) {
+      ctrl_pt.blanking_rect = new Shape.Rectangle({
+        from: [s_col*vw/3,     s_row*vh/2],
+        to:   [(s_col+1)*vw/3, (s_row+1)*vh/2],
+        fillColor:"black"
+      });
+    } else ctrl_pt.blanking_rect.opacity = 1 - ctrl_pt.blanking_rect.opacity;
+  }
+
+  // Print coordinates for warp
+  if(event.key == 'p') {
+
+  	var output = "";
+
+  	output += "OVERLAP-H " + overlap_h + " OVERLAP-V " + overlap_v + "\n\n";
+
+    for (s_r=0; s_r<=1; s_r++){    // loop over screen_row (s_r)
+      for (s_c=0; s_c<=2; s_c++){  // loop over screen_col (s_c)
+
+        var segs = ctrl_pts[s_r][s_c].blend_path.segments;
+
+        output += "ROW: " + s_r + " COL: " + s_c + "\n";
+        output += "(" + pad(segs[0].point.x -s_c*vw/3) + ", " + pad(segs[0].point.y -s_r*vh/2) + ") \t"
+                + "(" + pad(segs[1].point.x -s_c*vw/3) + ", " + pad(segs[1].point.y -s_r*vh/2) + ") \n"
+                + "(" + pad(segs[3].point.x -s_c*vw/3) + ", " + pad(segs[3].point.y -s_r*vh/2) + ") \t"
+                + "(" + pad(segs[2].point.x -s_c*vw/3) + ", " + pad(segs[2].point.y -s_r*vh/2) + ") \n\n";
+      }
+    }
+  }
+
+  console.log(output);
+
+  // Finally redraw graphics
+  redraw_paths();
+}
+
+redraw_paths();
+
+// hack to pad coords for easy reading
+function pad(number){
+  return ("        "+number.toFixed(2)).slice(-8)
+}
+
+</script>
+</head>
+<body style="overflow:hidden; margin:0; background-color:black;">
+  <canvas id="myCanvas" resize></canvas>
+</body>
+</html>
