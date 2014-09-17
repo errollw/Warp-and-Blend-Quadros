@@ -2,6 +2,8 @@
 
 This project hosts the code for *warping and blending* our tiled projector display wall in the [Rainbow Laboratory](http://www.cl.cam.ac.uk/research/rainbow/) at the [Cambridge Computer Lab](http://www.cl.cam.ac.uk/). We use Nvidia’s GPU utilities and programming interface ([NVAPI](https://developer.nvidia.com/nvapi)) to avoid struggling with many issues faced by past multi-projector deployments.
 
+![Image of our display wall](http://i.imgur.com/5S2TnZ3l.jpg)
+
 ### Projector hardware
 
 Our design uses six [BenQ W1400](http://benq.co.uk/product/projector/w1400) commodity-level projectors (1920×1080px each) providing a maximum resolution of **12.4 megapixels**. Our screen is sized at 4×1.5m, so users can get up to 2.5m close to the screen without being able to discern individual pixels. The projectors are arranged in a 3×2 configuration, and mounted under horizontal scaffolding beams attached to the ceiling. Our projector models are *short-throw*, the closest ones are 1.45m away from the screen so users can approach the display without creating unwanted shadows. They also feature *off-axis projection* and *lens-shift*, allowing them to be placed 2m high without experiencing serious perspective distortion.
