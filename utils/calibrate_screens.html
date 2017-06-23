@@ -72,7 +72,7 @@ function redraw_paths() {
                         + (s_r == 0 ? (cps[3].position-cps[1].position).normalize()*overlap_v/2 : 0),
         cps[2].position - (s_c != 0 ? (cps[3].position-cps[2].position).normalize()*overlap_h/2 : 0)
                         + (s_r == 0 ? (cps[2].position-cps[0].position).normalize()*overlap_v/2 : 0)];
-      
+
       cps.align_path = new Path(align_segs);
       cps.blend_path = new Path(blend_segs);
 
@@ -89,19 +89,35 @@ function onMouseDown(evt) {
 
   // choose which set of cps to adjust based on mouse position
   var pt = evt.point;
-  var cps = ctrl_pts[pt.y<vh/2 ? 0 : 1][pt.x<2*vw/3 ? pt.x<vw/3 ? 0 : 1 : 2]
 
-  var cp_to_move = cps[0];
-  for (cp_idx=0; cp_idx<=3; cp_idx++){
-    dist = (cps[cp_idx].position - evt.point).length
-    if (dist < (cp_to_move.position - evt.point).length)
-      cp_to_move = cps[cp_idx];
+  // Clicking in a rectangle selects the nearest corner
+
+  if (! Key.isDown('control')) {
+
+
+    var cps = ctrl_pts[pt.y<vh/2 ? 0 : 1][pt.x<2*vw/3 ? pt.x<vw/3 ? 0 : 1 : 2]
+
+    var cp_to_move = cps[0];
+    for (cp_idx=0; cp_idx<=3; cp_idx++){
+      dist = (cps[cp_idx].position - evt.point).length
+      if (dist < (cp_to_move.position - evt.point).length)
+        cp_to_move = cps[cp_idx];
+    }
+
+
+    if (selected_ctrl_pt)
+        selected_ctrl_pt.fillColor = "transparent";
+    selected_ctrl_pt = cp_to_move;
+    if (selected_ctrl_pt)
+      selected_ctrl_pt.fillColor = "white";
+
+  } else {
+
+    // Ctrl-clicking moves the currently-selected point
+
+    selected_ctrl_pt.position = pt;
+
   }
-
-  selected_ctrl_pt = cp_to_move;
-
-  cp_to_move.position = pt;
-
   redraw_paths();
 }
 
@@ -109,7 +125,7 @@ function onKeyDown(event) {
 
   if (Key.isDown("shift")) {
 
-    // Adjust overlap sizes
+    // Adjust overlap sizes with shift+cursor keys
     if (event.key == 'up')    overlap_v++;
     if (event.key == 'down')  overlap_v--;
     if (event.key == 'left')  overlap_h--;
@@ -125,6 +141,7 @@ function onKeyDown(event) {
 
   }
 
+  // Toggle a rectangle using Q,W,E, A,S,D
   if ("qweasd".indexOf(event.key) != -1) {
     var s_row = "asd".indexOf(event.key) != -1 ? 1 : 0,
         s_col = "qwe".indexOf(event.key) * "asd".indexOf(event.key) * -1;
@@ -138,7 +155,7 @@ function onKeyDown(event) {
     } else ctrl_pt.blanking_rect.opacity = 1 - ctrl_pt.blanking_rect.opacity;
   }
 
-  // Print coordinates for warp
+  // Press 'P' to print coordinates for warp to browser console
   if(event.key == 'p') {
 
   	var output = "";
