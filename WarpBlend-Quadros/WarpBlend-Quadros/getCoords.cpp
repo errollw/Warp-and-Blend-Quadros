@@ -2,8 +2,10 @@
 
 // for reading a file into a string
 #include <string>
+#include <iostream>
 #include <fstream>
 #include <streambuf>
+#include <windows.h>
 
 #include <regex>
 
@@ -16,19 +18,26 @@ vector<float> get_warping_vertices(int row, int col, float srcLeft, float srcTop
 
 	// read coordinates file into str
 	std::ifstream f("coords_for_warp.txt");
+	if (!f.is_open()) {
+		std::cout << "Failed to open coords file\n";
+		throw "Failed to open coords file";
+	}
 	std::string str((std::istreambuf_iterator<char>(f)),
 					 std::istreambuf_iterator<char>());
 
+	printf("Using warping:\n----------------\n%s\n----------------\n", str.c_str());
 	// extract float coordinates from text using regex
 	std::regex regex(
 		"ROW: " + to_string(row) + " COL: " + to_string(col) + "\\n"
 		"\\(\\s*(\\-?[0-9]+.[0-9]+),\\s*(\\-?[0-9]+.[0-9]+)\\)\\s+"		// top left corner (x,y)
-		"\\(\\s*(\\-?[0-9]+.[0-9]+),\\s*(\\-?[0-9]+.[0-9]+)\\)\\s\\n"	// top right corner (x,y)
+		"\\(\\s*(\\-?[0-9]+.[0-9]+),\\s*(\\-?[0-9]+.[0-9]+)\\)\\s*\\n"	// top right corner (x,y)
 		"\\(\\s*(\\-?[0-9]+.[0-9]+),\\s*(\\-?[0-9]+.[0-9]+)\\)\\s+"		// bottom left corner (x,y)
 		"\\(\\s*(\\-?[0-9]+.[0-9]+),\\s*(\\-?[0-9]+.[0-9]+)\\)"			// bottom right corner (x,y)
 		);
 	std::smatch match;
 	std::regex_search(str, match, regex);
+
+	std::cout << "coords found:" << match.size() << std::endl;
 
 	// extract coordinates of quadrilateral corners
 	Vector2f tl = Vector2f(stof(match[1].str()), stof(match[2].str()));
