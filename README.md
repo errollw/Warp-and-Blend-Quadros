@@ -31,6 +31,8 @@ The blending textures are generated with `warp_blending_mask.py` and [OpenCV](ht
 
 ### Using the calibration utility
 
+![Calibration screen](http://i.imgur.com/EuivEcq.jpg)
+
 Prerequisites:
 
 * You'll need a copy of Visual Studio to compile the code
@@ -42,10 +44,18 @@ Once you've done this...
 * The code currently assumes 6 projectors: 3 columns across and 2 rows
 * Your displays need to be connected in the correct order so that the Nvidia utilities number them 1-6, reading from top left to bottom right.
 * Set up Mosaic using the Nvidia Control Panel to put the displays in the right basic configuration, and enable it.  Windows should now consider it has one big display attached.
-* If you have any existing warping applied, make sure you run *UnwarpAll-Quadros* to clear it before calibrating.
+* Make sure there is *zero* overlap specified in Mosaic.
+* If you have any existing warping applied,  run *UnwapAll-Quadros* to clear it before calibrating.
 * Open the `calibrate_screens.html` page in Chrome, or in any other browser that will let you display it full-screen and give you access to the console log.
-* Six coloured quadrilaterals will appear, each should be positions basically on one projector, and your aim is to move their corner points so that the corners on adjacent quadrilaterals are aligned.  The controls for doing this are described below.
-* When you have aligned everything, the necessary coordinates will be output to the browser console log.  Copy these into a text file named `coords_for_warp.txt` and run the *WarpBlend-Quadros* utility, and it will use these to set up the warping and blending.
+* Six coloured quadrilaterals will appear, each should be positioned basically on one projector, and your aim is to move their corner points so that the corners on adjacent quadrilaterals are aligned.  The controls for doing this are described below.
+
+![Calibration screen closeup](http://i.imgur.com/PQ2FLry.jpg)
+
+* When you have aligned everything, the necessary coordinates will be output to the browser console log.  Copy these into a text file named `coords_for_warp.txt`.
+* Look at the overlap values specified at the top of the coordinate file (default 30 horizontal, 90 vertical). Put these into the Mosaic configuration.
+* Copy the coordinates into `warp_blending_mask.py` and run it to generate the blend mask PNGs `blend_*.png`.
+*  Run the *WarpBlend-Quadros* utility, and it will use the coordinates to set up the warping and the mask PNGs to do the blending.  The coordinate file and the mask PNGs need to be *in the current working directory* when you run the utility.
+
 
 Controls for the calibration screen:
 
@@ -53,7 +63,7 @@ Controls for the calibration screen:
 *  Ctrl-click to move it to approximately the right location.  You want to position each corner roughly in the middle of the overlapping zone of the projectors.
 *  Use cursor keys to make fine adjustments to the selected corner, and then move on to the next corner.
 *  You can use the Q, W, E, A, S, & D keys to toggle on or off the rectangle displayed at each corresponding location.
-*  You can use the shift key with the cursor keys to change the size of the overlap area.
-*  Finally, press 'P', and the coordinates will be printed to the browser's console log; you can copy them into a text file.
+*  You can use the shift key with the cursor keys to change the size of the overlap area if needed.
+*  Finally, press 'P', and the coordinates will be printed to the browser's console log; you can copy and paste them from here.
 
 
