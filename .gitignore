@@ -26,6 +26,10 @@ README.html
 *.out
 *.app
 
+# Archives
+*.rar
+*.zip
+
 # =========================
 # Operating System Files
 # =========================
