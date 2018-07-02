@@ -72,8 +72,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="amd64\nvapi64.lib" />
-    <Library Include="x86\nvapi.lib" />
-  </ItemGroup>
 </Project>

@@ -111,10 +111,6 @@
     </ClCompile>
     <ClCompile Include="UnwarpAll-Quadros.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="amd64\nvapi64.lib" />
-    <Library Include="x86\nvapi.lib" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

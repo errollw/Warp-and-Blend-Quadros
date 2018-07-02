@@ -79,6 +79,7 @@ int main(int argc, char **argv)
 			delete [] dispIds;
 			NvAPI_GetErrorMessage(error, estring);
 			printf("NvAPI_GPU_GetConnectedDisplayIds: %s\n", estring);
+			return error;
 		}
 
 		// Loop through all the displays
@@ -97,6 +98,7 @@ int main(int argc, char **argv)
 			{
 				NvAPI_GetErrorMessage(error, estring);
 				printf("NvAPI_GPU_GetScanoutConfiguration: %s\n", estring);
+				return error;
 			}
 			
 			// Desktop -- the size & location of the virtual desktop in Windows, in a Mosaic this will include all displays and overalp
@@ -125,6 +127,7 @@ int main(int argc, char **argv)
 			{
 				NvAPI_GetErrorMessage(error, estring);
 				printf("NvAPI_GPU_GetCurrentTopo: %s\n", estring);
+				return error;
 			}
 
 			if(topo.enabled == false)
@@ -175,6 +178,7 @@ int main(int argc, char **argv)
 			{ 
 				NvAPI_GetErrorMessage(error, estring);
 				printf("NvAPI_GPU_SetScanoutWarping: %s\n", estring);
+				return error;
 			}
 
 			// -----------------------------------------------------------------------------
@@ -214,6 +218,7 @@ int main(int argc, char **argv)
 			{
 				NvAPI_GetErrorMessage(error, estring);
 				printf("NvAPI_GPU_SetScanoutIntensity: %s\n", estring);
+				return error;
 			} 
 
 		} //end of for displays
