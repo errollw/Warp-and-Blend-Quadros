@@ -20,7 +20,6 @@ README.html
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe
