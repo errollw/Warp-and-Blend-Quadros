@@ -4,7 +4,7 @@
 
 #include <windows.h>
 #include <assert.h>
-#include "include/nvapi.h"
+#include "nvapi.h"
 
 #include <string>
 #include <regex>

@@ -19,7 +19,7 @@
 
 #include <windows.h>
 #include <assert.h>
-#include "include/nvapi.h"
+#include "../../include/nvapi.h"
 
 
 int main(int argc, char **argv)
